@@ -1,7 +1,7 @@
 import argparse
 import os
 import torch
-import torch.backends.cudnn as cudnn # 🚀 引入 cudnn 控制确定性
+import torch.backends.cudnn as cudnn 
 from utils.print_args import print_args
 import random
 import numpy as np
@@ -126,7 +126,6 @@ if __name__ == '__main__':
     parser.add_argument('--discsdtw', default=False, action="store_true",
                         help="Discrimitive shapeDTW warp preset augmentation")
     parser.add_argument('--extra_tag', type=str, default="", help="Anything extra")
-    # 为了兼容打印工具，补全缺失参数
     parser.add_argument('--top_k', type=int, default=5, help='for TimesBlock')
     # TimeXer
     parser.add_argument('--patch_len', type=int, default=16, help='patch length')
@@ -146,30 +145,7 @@ if __name__ == '__main__':
     parser.add_argument('--alpha', type=float, default=0.1, help='KNN for Graph Construction')
     parser.add_argument('--top_p', type=float, default=0.5, help='Dynamic Routing in MoE')
     parser.add_argument('--pos', type=int, choices=[0, 1], default=1, help='Positional Embedding. Set pos to 0 or 1')
-
-
-    # --- PA-LED 架构参数 ---
-    parser.add_argument('--num_states', type=int, default=64, help='Number of learnable dictionary states')
-    parser.add_argument('--lag_window', type=int, default=3, help='Causal lag window size (e.g., 3, 5, 7)') 
-    parser.add_argument('--use_vgm', type=int, default=1, help='是否使用VGM空间去噪模块 (1=是, 0=否)')
-    parser.add_argument('--use_multiscale', type=int, default=1, help='是否使用多尺度因果膨胀卷积 (1=是, 0=否)')
-    parser.add_argument('--use_led', type=int, default=1, help='是否使用LED环境字典 (1=是, 0=否)')
-    parser.add_argument('--clip_strategy', type=str, default='norm_clip_1.0', help='梯度裁剪策略')
-
-    # PA_LED_v3参数
-    parser.add_argument('--use_var_gate', type=int, default=1, help='use variable gated projection; 0 or 1')
-    parser.add_argument('--fusion_pos', type=str, default='late', help='fusion position: early or late')
     parser.add_argument('--weight_decay', type=float, default=0, help='optimizer weight decay')
-
-    #PA_LED_v4参数
-    parser.add_argument('--backbone', type=str, default='transformer', help='backbone type: transformer or linear')
-    parser.add_argument('--use_prior_alpha', type=int, default=1, help='Use logit prior initialization (1=True, 0=False)')
-
-   
-    # ==============================================================================
-    parser.add_argument('--stride', type=int, default=8, help='patch 步长 (XGate_Prime / SMA_PatchRouter 共用)')
-    parser.add_argument('--sma_kernel', type=int, default=25, help='SMA 平滑核大小 (XGate_Prime / SMA_PatchRouter 共用)')   
-    parser.add_argument('--use_exo', type=int, default=1, help='启用外生变量路由 (1=Yes, 0=No)')
 
 
     # XLinear hyperparameters
@@ -182,9 +158,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--usenorm', type=int, default=1)
 
-    parser.add_argument('--t_ff', type=int, default=0,
-                        help='FeatureGate / 趋势MLP 瓶颈维度'
-                             ' 推荐 256~1024, t_ff=512@dm96 参数量从107M降至~8M)')
+    parser.add_argument('--t_ff', type=int, default=0)
 
     parser.add_argument('--num_groups', type=int, default=0,help=' Low-rank bottleneck rank / group size')
     parser.add_argument(
@@ -217,11 +191,10 @@ if __name__ == '__main__':
         help='Core ablation mode for ExoPath'
     )
 
-    # ================= 🚀 DBLoss 新增核心接口 =================
     parser.add_argument('--use_dbloss', type=int, default=1, help='1 to use DBLoss, 0 to use MSELoss')
     parser.add_argument('--dbloss_alpha', type=float, default=0.5, help='Smoothing factor for DBLoss EMA (default 0.5)')
     parser.add_argument('--dbloss_beta', type=float, default=0.5, help='Weight balancing factor for Season/Trend in DBLoss (default 0.5)')
-    # ==========================================================
+
 
     args = parser.parse_args()
     
@@ -232,9 +205,8 @@ if __name__ == '__main__':
     if torch.cuda.is_available():
         torch.cuda.manual_seed(fix_seed)
         torch.cuda.manual_seed_all(fix_seed)
-        cudnn.deterministic = True  # 强制使用确定性算法 
-        cudnn.benchmark = False     # 禁用自动寻找最优算子，防止引入动态随机性
-    # =========================================================================
+        cudnn.deterministic = True 
+        cudnn.benchmark = False   
 
     if torch.cuda.is_available() and args.use_gpu:
         args.device = torch.device('cuda:{}'.format(args.gpu))
@@ -281,11 +253,10 @@ if __name__ == '__main__':
     if args.is_training:
         for ii in range(args.itr):
             exp = Exp(args) 
-            # ==================== 🚀 彻底解决权重相互覆盖的问题 ====================
-            # 放弃之前那长长一串没用的字符串，直接用包含全部物理参数的 model_id 来命名！
+         
             setting = '{}_{}_sl{}_pl{}_{}'.format(
                 args.task_name,
-                args.model_id, # 注意！这个 model_id 必须是 Optuna 生成的带有 T[x] 编号的！
+                args.model_id, 
                 args.seq_len,
                 args.pred_len,
                 ii
@@ -303,9 +274,8 @@ if __name__ == '__main__':
                 elif args.gpu_type == 'cuda':
                     torch.cuda.empty_cache()
     else:
-        exp = Exp(args)  # set experiments
+        exp = Exp(args)  
         ii = 0
-        # 同理，非训练模式下也使用 model_id 保证命名独立
         setting = '{}_{}_sl{}_pl{}_{}'.format(
                 args.task_name,
                 args.model_id, 
