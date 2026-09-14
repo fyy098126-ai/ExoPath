@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+export CUDA_VISIBLE_DEVICES=1
+
+python -u run.py --task_name long_term_forecast --is_training 1 --root_path ../Time-Series-Library/dataset/ETT-small/ --data_path ETTm1.csv --data ETTm1 --model ExoPath --model_id ETTm1_MS_96_720 --features MS --target OT --seq_len 96 --label_len 48 --pred_len 720 --enc_in 7 --dec_in 7 --c_out 1 --learning_rate 0.0007 --weight_decay 3e-07 --lradj cos_warmup --patience 7 --d_model 448 --t_ff 384 --num_groups 24 --batch_size 512 --dropout 0.75 --dbloss_alpha 0.2 --dbloss_beta 0.6 --train_epochs 30 --use_dbloss 1 --des exp --gpu 0 --use_gpu 1 --seed 2025
