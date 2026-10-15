@@ -59,15 +59,9 @@ class Exp_Basic(object):
             device = torch.device('mps')
             print('Use GPU: mps')
         else:
-            # 参数要求用GPU，但环境不支持，降级到CPU
             device = torch.device('cpu')
             print('Use CPU')
         return device
-    # def _acquire_device(self):
-    #     # 强制使用CPU，忽略所有GPU相关参数和判断
-    #     device = torch.device('cpu')
-    #     print('Use CPU (forced, ignore GPU settings)')
-    #     return device
 
     def _get_data(self):
         pass
