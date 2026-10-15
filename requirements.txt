@@ -1,1 +1,19 @@
 
+# Core ExoPath training/data pipeline, Python 3.11.
+# Pins reflect the inspected local environment; fresh installation not tested.
+# Local torch build: 2.1.0+cpu. Install the corresponding CUDA build separately
+# when GPU training is needed; omit the platform-specific suffix here.
+torch==2.1.0
+numpy==1.26.0
+pandas==2.3.3
+scipy==1.11.3
+scikit-learn==1.7.2
+matplotlib==3.10.8
+tqdm==4.66.5
+tensorboard==2.20.0
+
+# Eager imports in data_provider/data_loader.py and data_provider/m4.py.
+sktime==0.40.1
+datasets==4.5.0
+huggingface-hub==0.36.0
+patool==4.0.3
