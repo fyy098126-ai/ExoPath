@@ -1,10 +1,11 @@
+# ExoPath main-model training and evaluation, Python 3.11 (64-bit).
+# PyTorch matches the recorded paper-server version. Install the required
+# CPU/CUDA build from the official PyTorch index before installing this file.
+# The generic pin also accepts torch==2.11.0+cpu or torch==2.11.0+cu128.
+torch==2.11.0
 
-# Core ExoPath training/data pipeline, Python 3.11.
-# Pins reflect the inspected local environment; fresh installation not tested.
-# Local torch build: 2.1.0+cpu. Install the corresponding CUDA build separately
-# when GPU training is needed; omit the platform-specific suffix here.
-torch==2.1.0
-numpy==1.26.0
+# Keep NumPy on the 1.26 series for the pinned scientific-Python stack.
+numpy==1.26.4
 pandas==2.3.3
 scipy==1.11.3
 scikit-learn==1.7.2
@@ -12,7 +13,7 @@ matplotlib==3.10.8
 tqdm==4.66.5
 tensorboard==2.20.0
 
-# Eager imports in data_provider/data_loader.py and data_provider/m4.py.
+# Required by eager imports in the shared data loaders, even for local CSVs.
 sktime==0.40.1
 datasets==4.5.0
 huggingface-hub==0.36.0
