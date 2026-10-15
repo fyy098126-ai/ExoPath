@@ -1,6 +1,5 @@
 # ExoPath
 
-[English](README.md) | [简体中文](README_zh.md)
 
 PyTorch implementation of **ExoPath**, a time-series forecasting model with
 exogenous-conditioned decomposition and asymmetric trend–residual pathways.
